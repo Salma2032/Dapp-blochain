@@ -1,7 +1,9 @@
-// App.js
 import React, { useEffect, useState } from 'react';
 import Web3 from 'web3';
 import ProductMarketplace from './abis/ProductMarketplace.json';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import TransactionHistory from './TransactionHistory';
+import MyProducts from './MyProducts'; // New page for My Products
 import './App.css';
 
 function App() {
@@ -93,58 +95,73 @@ function App() {
   };
 
   return (
-    <div className="app-container">
-      <header className="topbar">
-        <h1>🛒 Decentralized Marketplace</h1>
-        {account ? (
-          <div>
-            <p>Connected account: {account}</p>
-            <button onClick={disconnect} className="disconnect-button">Disconnect</button>
-          </div>
-        ) : (
-          <button onClick={connect} className="connect-button">Connect</button>
-        )}
-      </header>
+    <Router>
+      <div className="app-container">
+        <header className="topbar">
+          <h1>🛒 Decentralized Marketplace</h1>
+          <nav>
+            <Link to="/">Home</Link>
+            {account && <Link to="/my-products">My Products</Link>}
+            {account && <Link to="/history">Transaction History</Link>}
+          </nav>
+          {account ? (
+            <div>
+              <p>Connected account: {account}</p>
+              <button onClick={disconnect} className="disconnect-button">Disconnect</button>
+            </div>
+          ) : (
+            <button onClick={connect} className="connect-button">Connect</button>
+          )}
+        </header>
 
-      {account && (
-        <form onSubmit={createProduct} className="form-card">
-          <input
-            placeholder="Product Title"
-            value={title}
-            onChange={e => setTitle(e.target.value)}
-            required
-          />
-          <input
-            placeholder="Description"
-            value={description}
-            onChange={e => setDescription(e.target.value)}
-            required
-          />
-          <input
-            placeholder="Price in ETH"
-            value={price}
-            onChange={e => setPrice(e.target.value)}
-            required
-          />
-          <button type="submit">Add Product</button>
-        </form>
-      )}
+        <Routes>
+          <Route path="/" element={
+            <>
+              {account && (
+                <form onSubmit={createProduct} className="form-card">
+                  <input
+                    placeholder="Product Title"
+                    value={title}
+                    onChange={e => setTitle(e.target.value)}
+                    required
+                  />
+                  <input
+                    placeholder="Description"
+                    value={description}
+                    onChange={e => setDescription(e.target.value)}
+                    required
+                  />
+                  <input
+                    placeholder="Price in ETH"
+                    value={price}
+                    onChange={e => setPrice(e.target.value)}
+                    required
+                  />
+                  <button type="submit">Add Product</button>
+                </form>
+              )}
 
-      <div className="product-list">
-        {loading ? <p>Loading...</p> : products.map(product => (
-          <div key={product.id} className="product-card">
-            <h3>{product.title}</h3>
-            <p>{product.description}</p>
-            <p><strong>{Web3.utils.fromWei(product.price, 'ether')} ETH</strong></p>
-            <p>Seller: {product.seller}</p>
-            <p>Status: {product.isSold ? 'Sold' : 'Available'}</p>
-            {!product.isSold && (
-              <button onClick={() => purchaseProduct(product.id, product.price)}>Buy</button>
-            )}
-          </div>
-        ))}
+              <div className="product-list">
+                {loading ? <p>Loading...</p> : products.map(product => (
+                  <div key={product.id} className="product-card">
+                    <h3>{product.title}</h3>
+                    <p>{product.description}</p>
+                    <p><strong>{Web3.utils.fromWei(product.price, 'ether')} ETH</strong></p>
+                    <p>Seller: {product.seller}</p>
+                    <p>Status: {product.isSold ? 'Sold' : 'Available'}</p>
+                    {!product.isSold && (
+                      <button onClick={() => purchaseProduct(product.id, product.price)}>Buy</button>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </>
+          } />
+          <Route path="/my-products" element={<MyProducts account={account} contract={contract} />} />
+          <Route path="/history" element={<TransactionHistory account={account} />} />
+        </Routes>
       </div>
-    </div>
+    </Router>
   );
 }
 
