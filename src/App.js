@@ -40,8 +40,8 @@ function App() {
           loadedProducts.push(product);
         }
 
-        const availableProducts = loadedProducts.filter(p => !p.isSold);
-        setProducts(availableProducts);
+        // Set all products, not just available ones
+        setProducts(loadedProducts);
       } else {
         alert('Smart contract not deployed to detected network.');
       }
@@ -148,10 +148,22 @@ function App() {
                     <p>{product.description}</p>
                     <p><strong>{Web3.utils.fromWei(product.price, 'ether')} ETH</strong></p>
                     <p>Seller: {product.seller}</p>
-                    <p>Status: {product.isSold ? 'Sold' : 'Available'}</p>
-                    {!product.isSold && (
-                      <button onClick={() => purchaseProduct(product.id, product.price)}>Buy</button>
-                    )}
+                    {/* Status label with style change for sold items */}
+                    <p style={{ color: product.isSold ? 'red' : 'green' }}>
+                      Status: {product.isSold ? 'Sold' : 'Available'}
+                    </p>
+                    {/* Disable Buy button if sold */}
+                    <button
+                      onClick={() => purchaseProduct(product.id, product.price)}
+                      disabled={product.isSold}
+                      style={{
+                        backgroundColor: product.isSold ? '#ccc' : '#28a745',
+                        color: product.isSold ? '#666' : '#fff',
+                        cursor: product.isSold ? 'not-allowed' : 'pointer'
+                      }}
+                    >
+                      {product.isSold ? 'Unavailable' : 'Buy'}
+                    </button>
                   </div>
                 ))}
               </div>
