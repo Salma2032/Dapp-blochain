@@ -35,21 +35,23 @@ function TransactionHistory({ account }) {
   }, [account]);
 
   return (
-    <div>
+    <div className="transaction-history">
       <h2>🧾 Transaction History</h2>
       {loading ? <p>Loading history...</p> : (
-        <div className="product-list">
+        <div className="transaction-list">
           {products.length === 0 ? (
             <p>No transactions yet.</p>
           ) : (
             products.map(product => (
-              <div key={product.id} className="product-card">
+              <div key={product.id} className="transaction-card">
                 <h3>{product.title}</h3>
                 <p>{product.description}</p>
                 <p><strong>{Web3.utils.fromWei(product.price, 'ether')} ETH</strong></p>
                 <p>Seller: {product.seller}</p>
                 <p>Buyer: {product.isSold ? product.owner : 'Not sold yet'}</p>
-                <p>Status: {product.isSold ? 'Sold' : 'Available'}</p>
+                <p className={`transaction-status ${product.isSold ? 'sold' : 'available'}`}>
+                  Status: {product.isSold ? 'Sold' : 'Available'}
+                </p>
               </div>
             ))
           )}
