@@ -98,7 +98,7 @@ function App() {
     <Router>
       <div className="app-container">
         <header className="topbar">
-          <h1>🛒 Decentralized Marketplace</h1>
+          <h1> Decentralized Marketplace</h1>
           <nav>
             <Link to="/">Home</Link>
             {account && <Link to="/my-products">My Products</Link>}
