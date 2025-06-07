@@ -1,9 +1,19 @@
 import { getWeb3 } from './web3';
-import ProductMarketplaceABI from './ProductMarketplace.json'; // Import the ABI
+import ProductMarketplaceArtifact from '../build/contracts/ProductMarketplace.json'; 
 
-const contractAddress = "0x3F04A965c9e7F91A9b60b68591A8862B757831fc"; 
 export const getContract = async () => {
   const web3 = await getWeb3();
-  const contract = new web3.eth.Contract(ProductMarketplaceABI.abi, contractAddress);
+
+  const networkId = await web3.eth.net.getId();
+  const deployedNetwork = ProductMarketplaceArtifact.networks[networkId];
+
+  if (!deployedNetwork) {
+    throw new Error(`Contract not deployed on network with ID ${networkId}`);
+  }
+
+  const contract = new web3.eth.Contract(
+    ProductMarketplaceArtifact.abi,
+    deployedNetwork.address
+  );
   return contract;
 };

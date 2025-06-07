@@ -46,6 +46,10 @@
 
 // const HDWalletProvider = require('@truffle/hdwallet-provider');
 
+require('dotenv').config();
+const HDWalletProvider = require('@truffle/hdwallet-provider');
+
+
 module.exports = {
   /**
    * Networks define how you connect to your ethereum client and let you set the
@@ -56,14 +60,31 @@ module.exports = {
    *
    * $ truffle test --network <network-name>
    */
-
+  plugins: ["truffle-plugin-verify"],
+  api_keys: {
+  etherscan: process.env.ETHERSCAN_API_KEY
+},
   networks: {
   development: {
     host: "127.0.0.1", // Localhost (default: none)
     port: 7545,         // The port Ganache runs on (check Ganache UI)
     network_id: "*",    // Match any network id
   },
-  },
+  sepolia: {
+  provider: () =>
+    new HDWalletProvider({
+      privateKeys: [process.env.PRIVATE_KEY],
+      providerOrUrl: process.env.alchemy_URL,
+    }),
+  network_id: 11155111,
+  confirmations: 2,
+  timeoutBlocks: 500,
+  skipDryRun: true
+},
+dashboard: {
+  port: 24012 // this is the default port Truffle Dashboard listens on
+}, 
+},
 
 
   // Set default mocha options here, use special reporters, etc.
